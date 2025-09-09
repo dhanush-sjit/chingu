@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
 
 // ... (keep all your existing styled-components declarations)
 declare global {
@@ -157,9 +159,21 @@ const RoadmapDisplay = styled.div`
     font-family: 'Courier New', Courier, monospace;
 `;
 
+interface RoadmapStep {
+    title: string;
+    description: string;
+    timeline: string;
+    notes?: string;
+    status?: boolean;
+}
+
+interface Roadmap {
+    steps: RoadmapStep[];
+}
+
 const App: React.FC = () => {
     const [aspiration, setAspiration] = useState('');
-    const [roadmap, setRoadmap] = useState('');
+    const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
     const [loading, setLoading] = useState(false);
 
     const handleGenerateRoadmap = async () => {
@@ -167,13 +181,11 @@ const App: React.FC = () => {
         try {
             const response = await fetch('http://localhost:8000/generate-roadmap', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ aspiration }),
             });
             const data = await response.json();
-            setRoadmap(data.roadmap);
+            setRoadmap(data);
         } catch (error) {
             console.error('Error generating roadmap:', error);
         } finally {
@@ -218,9 +230,19 @@ const App: React.FC = () => {
                     </Button>
 
                     {roadmap && (
-                        <RoadmapDisplay>
-                            {roadmap}
-                        </RoadmapDisplay>
+                        <VerticalTimeline>
+                          {roadmap.steps.map((item, idx) => (
+                            <VerticalTimelineElement
+                              key={idx}
+                              date={item.timeline}
+                              iconStyle={{ background: item.status ? '#0f0' : '#ccc' }}
+                            >
+                              <h3>{item.title}</h3>
+                              <p>{item.description}</p>
+                              <small>{item.notes}</small>
+                            </VerticalTimelineElement>
+                          ))}
+                        </VerticalTimeline>
                     )}
                 </RoadmapContainer>
 

@@ -13,7 +13,7 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,18 +45,24 @@ async def generate_roadmap(request: AspirationRequest):
     I want to achieve the following aspiration: "{request.aspiration}"
 
     Please provide a detailed roadmap to achieve this goal.
-    Format the roadmap as a visual chart using markdown elements such as checklists, tables, or flow diagrams.
-    Include:
-    - Key steps and milestones (use a checklist or table)
-    - Recommended resources (books, websites, courses) in a table
-    - Important skills to learn (bullet points)
-    - Suggested timeline for each step (add a timeline column in the table)
-    - Tips for staying motivated and overcoming common challenges (bullet points)
-
-    Make the roadmap visually clear and easy to follow. Use markdown formatting for all sections.
+    Return the key steps and milestones as a JSON array with fields: step, title, description, timeline, status, notes.
+    Also include recommended resources, important skills, and tips as separate JSON arrays.
+    Example format:
+    {{
+      "steps": [
+        {{"step": 1, "title": "...", "description": "...", "timeline": "...", "status": false, "notes": "..."}},
+        ...
+      ],
+      "resources": [...],
+      "skills": [...],
+      "tips": [...]
+    }}
+    Only return valid JSON.
     """
     try:
         response = model.generate_content(prompt)
-        return {"roadmap": response.text}
+        import json
+        roadmap_json = json.loads(response.text)
+        return roadmap_json
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred with the AI service: {e}")
