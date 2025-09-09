@@ -45,14 +45,15 @@ async def generate_roadmap(request: AspirationRequest):
     I want to achieve the following aspiration: "{request.aspiration}"
 
     Please provide a detailed roadmap to achieve this goal.
+    Format the roadmap as a visual chart using markdown elements such as checklists, tables, or flow diagrams.
     Include:
-    - Key steps and milestones
-    - Recommended resources (books, websites, courses)
-    - Important skills to learn
-    - Suggested timeline for each step
-    - Tips for staying motivated and overcoming common challenges
+    - Key steps and milestones (use a checklist or table)
+    - Recommended resources (books, websites, courses) in a table
+    - Important skills to learn (bullet points)
+    - Suggested timeline for each step (add a timeline column in the table)
+    - Tips for staying motivated and overcoming common challenges (bullet points)
 
-    Format the response in a clear, structured way. Use markdown for formatting.
+    Make the roadmap visually clear and easy to follow. Use markdown formatting for all sections.
     """
     try:
         response = model.generate_content(prompt)
